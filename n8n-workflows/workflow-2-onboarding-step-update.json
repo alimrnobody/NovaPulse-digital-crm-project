@@ -1,1 +1,623 @@
-
+{
+  "nodes": [
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{\n  \"success\": true,\n  \"message\": \"Appointment booked successfully\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        64,
+        800
+      ],
+      "id": "aafac384-d32e-4dfd-b0d7-dfacb87d6b3d",
+      "name": "Return Signup Success Response"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "2bbb06de-c529-43db-827c-c9918ae9716a",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -784,
+        544
+      ],
+      "id": "58aba20b-2c9a-4cb9-91b3-0564a12e5757",
+      "name": "Webhook",
+      "webhookId": "2bbb06de-c529-43db-827c-c9918ae9716a"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "d3f692bd-d27f-4c1f-b337-731edb6bc3d4",
+              "name": "email",
+              "value": "={{ $json.body.email }}",
+              "type": "string"
+            },
+            {
+              "id": "e5f33be3-f1e8-47ee-be38-b514fc104995",
+              "name": "step_number",
+              "value": "={{ $json.body.step_number }}",
+              "type": "number"
+            },
+            {
+              "id": "55fe0f62-458b-4a90-b537-57b64779aab4",
+              "name": "step_name",
+              "value": "={{ $json.body.step_name }}",
+              "type": "string"
+            },
+            {
+              "id": "1af9c775-be0a-4059-8de0-7751e3b78cd0",
+              "name": "step_data",
+              "value": "={{ $json.body.step_data }}",
+              "type": "string"
+            },
+            {
+              "id": "1d70695e-eeb0-425d-a46b-660c6acc66b9",
+              "name": "timestamp",
+              "value": "={{ new Date().toISOString() }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -576,
+        544
+      ],
+      "id": "9e983f26-1a82-4d46-afb4-55357f870430",
+      "name": "Normalize Step Payload"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "e48f2a8e-cc48-4a9f-beaa-8969d23f5a4e",
+              "leftValue": "={{ $json.email }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "d1278682-1e1d-43d0-976b-8b2e6b3e0f62",
+              "leftValue": "={{ $json.step_number }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "number",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "62a37dc0-33c1-49d2-bc6c-23be11324dd6",
+              "leftValue": "={{ $json.step_number }}",
+              "rightValue": 1,
+              "operator": {
+                "type": "number",
+                "operation": "gte"
+              }
+            },
+            {
+              "id": "b12bc4f5-a22f-4714-8314-71a759573f91",
+              "leftValue": "={{ $json.step_number }}",
+              "rightValue": 5,
+              "operator": {
+                "type": "number",
+                "operation": "lte"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -368,
+        544
+      ],
+      "id": "f5509af0-764d-4774-8616-31925fa85961",
+      "name": "Validate Step Payload"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "5851f2ca-22d5-4d38-a03d-732c0d054be4",
+              "name": "mapped_stage_name",
+              "value": "={{ \n  $json.step_number == 1 ? \"Profile Completed\" :\n  $json.step_number == 2 ? \"Services Selected\" :\n  $json.step_number == 3 ? \"Documents Uploaded\" :\n  $json.step_number == 4 ? \"Goals Defined\" :\n  \"Onboarding Complete\"\n}}",
+              "type": "string"
+            },
+            {
+              "id": "63c42659-8a98-4edb-b472-512920f5e79b",
+              "name": "pipelineStageId",
+              "value": "={{ \n  $json.step_number == 1 ? \"dd8b9222-5100-41f5-a3d2-04a3ab3b7a2f\" :\n  $json.step_number == 2 ? \"bfaa5a5b-f4d8-49cb-9b9c-a20aa95823aa\" :\n  $json.step_number == 3 ? \"ab67f656-568a-4f7b-a5a6-bb530b768de1\" :\n  $json.step_number == 4 ? \"32dca029-65a5-4e38-a97e-ee3ccfa6c706\" :\n  \"9caab3d7-286d-4d75-8340-3918e16b922c\"\n}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -128,
+        528
+      ],
+      "id": "eefd7dde-eed0-4fc5-b25f-296c02e264c8",
+      "name": "Map Step To Stage"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://services.leadconnectorhq.com/contacts/search",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Accept",
+              "value": "application/json"
+            },
+            {
+              "name": "Version",
+              "value": "2021-07-28"
+            },
+            {
+              "name": "Accept",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"locationId\": \"VInb0zHYRQYM0rvqW8YT\",\n  \"page\": 1,\n  \"pageLimit\": 10,\n  \"filters\": [\n    {\n      \"field\": \"email\",\n      \"operator\": \"eq\",\n      \"value\": \"{{ $('Normalize Step Payload').item.json.email }}\"\n    }\n  ]\n}",
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        80,
+        528
+      ],
+      "id": "47a3eb56-24c3-4350-b983-20ffe89a2dea",
+      "name": "Find Contact by Email",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "1Nwoq4guqXFBhh9B",
+          "name": "Header Auth account for pipeline"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://services.leadconnectorhq.com/opportunities/upsert",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Accept",
+              "value": "application/json"
+            },
+            {
+              "name": "Version",
+              "value": "2021-07-28"
+            },
+            {
+              "name": "Accept",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"pipelineId\": \"cUl8GunqIevqk2KNl1Jo\",\n  \"locationId\": \"VInb0zHYRQYM0rvqW8YT\",\n  \"contactId\": \"{{ $json.contacts[0].id }}\",\n  \"name\": \"Onboarding - {{ $json.contacts[0].email }}\",\n  \"status\": \"open\",\n  \"pipelineStageId\": \"{{ $('Map Step To Stage').item.json.pipelineStageId }}\"\n}",
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        288,
+        528
+      ],
+      "id": "5088d3a1-0370-41e0-be2c-934065480307",
+      "name": "Update Opportunity Stage",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "1Nwoq4guqXFBhh9B",
+          "name": "Header Auth account for pipeline"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "PUT",
+        "url": "=https://services.leadconnectorhq.com/contacts/{{ $json.contactId }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Accept",
+              "value": "application/json"
+            },
+            {
+              "name": "Version",
+              "value": "2021-07-28"
+            },
+            {
+              "name": "Accept",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"customFields\": [\n    {\n      \"key\": \"onboarding_progress\",\n      \"field_value\": {{$json.step_number}}\n    }\n  ]\n}",
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        -560,
+        800
+      ],
+      "id": "15d478db-12b1-4e34-a254-62256a648d36",
+      "name": "Update Onboarding Progress Field",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "1Nwoq4guqXFBhh9B",
+          "name": "Header Auth account for pipeline"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "7d3cd35e-239d-41f5-8654-21d781a46ec3",
+              "name": "contactId",
+              "value": "={{ $json.opportunity.contactId }}",
+              "type": "string"
+            },
+            {
+              "id": "ead5f51b-761f-4419-89e9-569f8d447dd2",
+              "name": "step_number",
+              "value": "={{ $('Normalize Step Payload').item.json.step_number }}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -768,
+        800
+      ],
+      "id": "6832a758-6de7-4b8d-8231-acc721497947",
+      "name": "Prepare Progress Update Data"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1JZ23GMlAV3FF3nMUZsl_UqGj9P8YaH-mKc8BOmZBsQM",
+          "mode": "list",
+          "cachedResultName": "NovaPulse Digital - Onboarding Log",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1JZ23GMlAV3FF3nMUZsl_UqGj9P8YaH-mKc8BOmZBsQM/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Leads",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1JZ23GMlAV3FF3nMUZsl_UqGj9P8YaH-mKc8BOmZBsQM/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Timestamp": "={{ $json.timestamp }}",
+            "Step Number": "={{ $json.step_number }}",
+            "Step Name": "={{ $json.step_name }}",
+            "Email": "={{ $json.email }}",
+            "Company": "={{ $json.company }}",
+            "Data Summary": "={{ $json.data_summary }}"
+          },
+          "matchingColumns": [
+            "Email"
+          ],
+          "schema": [
+            {
+              "id": "Timestamp",
+              "displayName": "Timestamp",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Company",
+              "displayName": "Company",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Step Number",
+              "displayName": "Step Number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Step Name",
+              "displayName": "Step Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Data Summary",
+              "displayName": "Data Summary",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -144,
+        800
+      ],
+      "id": "0ab10152-0edf-4695-aa8c-5b092f7ae53f",
+      "name": "Prepare Sheet Log Data",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "wZSgujc5GpgVoU6i",
+          "name": "Google Sheets OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "9a2fe2d4-9351-4176-a5e7-75efdbe86c61",
+              "name": "timestamp",
+              "value": "={{ $('Normalize Step Payload').item.json.timestamp }}",
+              "type": "string"
+            },
+            {
+              "id": "963b7b28-bb19-47ba-956b-2db800dff9f2",
+              "name": "company",
+              "value": "={{ $('Find Contact by Email').item.json.contacts[0].companyName }}",
+              "type": "string"
+            },
+            {
+              "id": "e822d2fb-f919-4517-93c3-d7873667039d",
+              "name": "email",
+              "value": "={{ $('Normalize Step Payload').item.json.email }}",
+              "type": "string"
+            },
+            {
+              "id": "3462cb44-fd25-46d5-b772-be248d9da52d",
+              "name": "step_number",
+              "value": "={{ $('Normalize Step Payload').item.json.step_number }}",
+              "type": "number"
+            },
+            {
+              "id": "82d02a81-d3f8-425f-89ff-0fcf3a1da34c",
+              "name": "step_name",
+              "value": "={{ $('Normalize Step Payload').item.json.step_name }}",
+              "type": "string"
+            },
+            {
+              "id": "bb6a2719-1a48-49cf-8b41-d580ef2f4203",
+              "name": "data_summary",
+              "value": "={{ $('Normalize Step Payload').item.json.step_data }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -352,
+        800
+      ],
+      "id": "7baea37f-0232-463a-9712-c424c5093b61",
+      "name": "Prepare Sheet Log Data1"
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Normalize Step Payload",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize Step Payload": {
+      "main": [
+        [
+          {
+            "node": "Validate Step Payload",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate Step Payload": {
+      "main": [
+        [
+          {
+            "node": "Map Step To Stage",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Map Step To Stage": {
+      "main": [
+        [
+          {
+            "node": "Find Contact by Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Find Contact by Email": {
+      "main": [
+        [
+          {
+            "node": "Update Opportunity Stage",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Opportunity Stage": {
+      "main": [
+        [
+          {
+            "node": "Prepare Progress Update Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Onboarding Progress Field": {
+      "main": [
+        [
+          {
+            "node": "Prepare Sheet Log Data1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Progress Update Data": {
+      "main": [
+        [
+          {
+            "node": "Update Onboarding Progress Field",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Sheet Log Data": {
+      "main": [
+        [
+          {
+            "node": "Return Signup Success Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Sheet Log Data1": {
+      "main": [
+        [
+          {
+            "node": "Prepare Sheet Log Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "b555b5d71ea7d40f0ebe444a4a804283c568a88f169b7dfbce31e1c66e1334dc"
+  }
+}
