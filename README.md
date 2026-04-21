@@ -33,6 +33,3 @@ A **fully automated onboarding system** with:
 - Real-time workflow automation
 - Centralized logging & tracking
 
----
-
-## 🏗️ Architecture
