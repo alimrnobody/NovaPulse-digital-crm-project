@@ -76,6 +76,49 @@
     },
     {
       "parameters": {
+        "url": "https://services.leadconnectorhq.com/opportunities/pipelines",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBearerAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "locationId",
+              "value": "VInb0zHYRQYM0rvqW8YT"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Version",
+              "value": "2021-07-28"
+            }
+          ]
+        },
+        "options": {
+          "response": {}
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        688,
+        -1008
+      ],
+      "id": "77114577-7da5-4486-a9e8-971dc39a3ed8",
+      "name": "Get Ghl Pipeline Stage ID",
+      "credentials": {
+        "httpBearerAuth": {
+          "id": "uT1RagUi1lsgN7Wq",
+          "name": "Bearer Auth account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
         "method": "POST",
         "url": "https://services.leadconnectorhq.com/contacts/upsert",
         "authentication": "genericCredentialType",
@@ -296,6 +339,7 @@
   },
   "pinData": {},
   "meta": {
+    "templateCredsSetupCompleted": true,
     "instanceId": "b555b5d71ea7d40f0ebe444a4a804283c568a88f169b7dfbce31e1c66e1334dc"
   }
 }
