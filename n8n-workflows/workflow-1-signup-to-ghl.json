@@ -1,1 +1,301 @@
-
+{
+  "nodes": [
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "5d585b5e-ff96-48e7-aeef-1d7bde490bcd",
+              "leftValue": "={{ $json.full_name }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "f719e74f-0b19-40a1-9523-0f231b9a12ff",
+              "leftValue": "={{ $json.email }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "8af60cf1-af56-453b-8258-5b3c9b77a669",
+              "leftValue": "={{ $json.phone }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "fbce8f7d-5f40-424a-a144-c91e25169bb0",
+              "leftValue": "={{ $json.company_name }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "28a04314-15a9-4a0e-a43c-eb2864798969",
+              "leftValue": "={{ $json.source }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -992,
+        16
+      ],
+      "id": "3b62dc5a-9f09-474f-bcdc-6216a8fa502b",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://services.leadconnectorhq.com/contacts/upsert",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBearerAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Version",
+              "value": "2021-07-28"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"locationId\": \"VInb0zHYRQYM0rvqW8YT\",\n  \"name\": \"{{ $json.full_name }} \",\n  \"email\": \"{{ $json.email }}\",\n  \"phone\": \"{{ $json.phone }}\",\n  \"companyName\": \"{{ $json.company_name }}\",\n  \"source\": \"{{ $json.source }}\",\n  \"customFields\": [\n  {\n    \"key\": \"contact.source\", \n    \"field_value\": \"{{ $json.source }}\"\n  }\n ],\n  \"tags\": [\"Client Portal\"]\n}",
+        "options": {
+          "response": {}
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        -768,
+        0
+      ],
+      "id": "2542d624-1813-4af3-8a74-f741bf3c6104",
+      "name": "Upsert GHL Contact",
+      "credentials": {
+        "httpBearerAuth": {
+          "id": "uT1RagUi1lsgN7Wq",
+          "name": "Bearer Auth account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://services.leadconnectorhq.com/opportunities/upsert",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Accept",
+              "value": "application/json"
+            },
+            {
+              "name": "Version",
+              "value": "2021-07-28"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"pipelineId\": \"cUl8GunqIevqk2KNl1Jo\",\n  \"locationId\": \"VInb0zHYRQYM0rvqW8YT\",\n  \"contactId\": \"{{ $json.contact.id }}\",\n  \"name\": \"New Signup - {{ $json.contact.companyName }}\",\n  \"status\": \"open\",\n  \"pipelineStageId\": \"10f51d57-d18c-4d61-a566-a621bdb2f8ba\"\n}",
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        -560,
+        0
+      ],
+      "id": "f01f95e6-25e4-4838-beb2-193ff92b3808",
+      "name": "Create New Signup Opportunity",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "1Nwoq4guqXFBhh9B",
+          "name": "Header Auth account for pipeline"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{\n  \"success\": true,\n  \"message\": \"Appointment booked successfully\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        -320,
+        0
+      ],
+      "id": "11faaa78-f1e8-4c3b-8033-08196d7ebe05",
+      "name": "Return Signup Success Response"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "75493a34-e8a9-4033-aae3-d91b46f2f941",
+              "name": "full_name",
+              "value": "={{ $json.body.full_name }}",
+              "type": "string"
+            },
+            {
+              "id": "a80ad0c2-7c9a-4d9d-b451-6da4e229afdc",
+              "name": "=email",
+              "value": "={{ $json.body.email }}",
+              "type": "string"
+            },
+            {
+              "id": "4dbb481f-39af-40a9-8f41-70c469e3401d",
+              "name": "phone",
+              "value": "={{ $json.body.phone }}",
+              "type": "string"
+            },
+            {
+              "id": "d20901a6-d1be-409c-864f-99d5a1651468",
+              "name": "company_name",
+              "value": "={{ $json.body.company_name }}",
+              "type": "string"
+            },
+            {
+              "id": "e7e69d5d-42ec-4bc8-acc9-c593cb857512",
+              "name": "source",
+              "value": "=Client Portal",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1168,
+        16
+      ],
+      "id": "13d5dd72-a3c8-472e-825f-e2a6d7a614b9",
+      "name": "Normalize Signup Payload"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "e37c6d2d-39b2-4902-a866-46d8b132aac1",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -1376,
+        16
+      ],
+      "id": "1e53dca7-640f-465d-9695-a5ea7ad53474",
+      "name": "Client Signup Webhook",
+      "webhookId": "e37c6d2d-39b2-4902-a866-46d8b132aac1"
+    }
+  ],
+  "connections": {
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Upsert GHL Contact",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "Upsert GHL Contact": {
+      "main": [
+        [
+          {
+            "node": "Create New Signup Opportunity",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create New Signup Opportunity": {
+      "main": [
+        [
+          {
+            "node": "Return Signup Success Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize Signup Payload": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Client Signup Webhook": {
+      "main": [
+        [
+          {
+            "node": "Normalize Signup Payload",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "meta": {
+    "instanceId": "b555b5d71ea7d40f0ebe444a4a804283c568a88f169b7dfbce31e1c66e1334dc"
+  }
+}
