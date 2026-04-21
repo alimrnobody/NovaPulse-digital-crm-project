@@ -1,0 +1,126 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 222 47% 6%;
+    --foreground: 210 40% 96%;
+
+    --card: 222 44% 8%;
+    --card-foreground: 210 40% 96%;
+
+    --popover: 222 44% 8%;
+    --popover-foreground: 210 40% 96%;
+
+    --primary: 238 84% 62%;
+    --primary-foreground: 210 40% 98%;
+
+    --secondary: 222 30% 14%;
+    --secondary-foreground: 210 40% 90%;
+
+    --muted: 222 30% 12%;
+    --muted-foreground: 215 20% 55%;
+
+    --accent: 190 95% 55%;
+    --accent-foreground: 222 47% 6%;
+
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 210 40% 98%;
+
+    --success: 142 71% 45%;
+    --success-foreground: 210 40% 98%;
+
+    --warning: 38 92% 50%;
+    --warning-foreground: 222 47% 6%;
+
+    --border: 222 30% 16%;
+    --input: 222 30% 16%;
+    --ring: 238 84% 62%;
+
+    --radius: 0.75rem;
+
+    --sidebar-background: 222 47% 5%;
+    --sidebar-foreground: 215 20% 65%;
+    --sidebar-primary: 238 84% 62%;
+    --sidebar-primary-foreground: 210 40% 98%;
+    --sidebar-accent: 222 30% 12%;
+    --sidebar-accent-foreground: 210 40% 96%;
+    --sidebar-border: 222 30% 14%;
+    --sidebar-ring: 238 84% 62%;
+
+    --gradient-primary: linear-gradient(135deg, hsl(238 84% 62%), hsl(199 89% 55%));
+    --gradient-card: linear-gradient(145deg, hsl(222 44% 10%), hsl(222 44% 7%));
+    --shadow-glow: 0 0 30px -5px hsl(190 95% 55% / 0.15);
+    --shadow-card: 0 4px 24px -4px hsl(222 47% 3% / 0.5);
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  }
+}
+
+@layer utilities {
+  .glass-card {
+    @apply bg-card/80 backdrop-blur-xl border border-border/50 rounded-xl;
+    box-shadow: var(--shadow-card);
+  }
+
+  .glow-border {
+    @apply border border-primary/20;
+    box-shadow: var(--shadow-glow);
+  }
+
+  .gradient-text {
+    @apply bg-clip-text text-transparent;
+    background-image: var(--gradient-primary);
+  }
+
+  .gradient-button {
+    background-image: var(--gradient-primary);
+    @apply text-primary-foreground font-semibold shadow-lg;
+    box-shadow: 0 4px 20px -4px hsl(190 95% 55% / 0.4);
+  }
+
+  .gradient-button:hover {
+    box-shadow: 0 6px 28px -4px hsl(190 95% 55% / 0.5);
+    filter: brightness(1.1);
+  }
+
+  .status-on-track {
+    @apply bg-[hsl(var(--success))] text-[hsl(var(--success-foreground))];
+  }
+  .status-at-risk {
+    @apply bg-[hsl(var(--warning))] text-[hsl(var(--warning-foreground))];
+  }
+  .status-delayed {
+    @apply bg-[hsl(var(--destructive))] text-[hsl(var(--destructive-foreground))];
+  }
+
+  .fade-in {
+    animation: fadeIn 0.5s ease-out;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes pulse-glow {
+    0%, 100% { box-shadow: 0 0 20px -5px hsl(190 95% 55% / 0.2); }
+    50% { box-shadow: 0 0 30px -5px hsl(190 95% 55% / 0.4); }
+  }
+
+  .animate-pulse-glow {
+    animation: pulse-glow 3s ease-in-out infinite;
+  }
+}
